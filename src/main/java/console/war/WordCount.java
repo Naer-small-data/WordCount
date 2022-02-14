@@ -1,5 +1,6 @@
 package console.war;
 
+import org.apache.commons.lang3.StringUtils;
 import org.jsoup.Jsoup;
 
 import java.io.IOException;
@@ -10,7 +11,7 @@ import java.util.stream.Collectors;
 
 public class WordCount {
 
-    private static final int TOTAL_PAGES = 1500;
+    private static final int TOTAL_PAGES = 600;
     private static final DecimalFormat DECIMAL_FORMAT = new DecimalFormat("0.00");
 
     public static void main(String[] args) {
@@ -41,29 +42,39 @@ public class WordCount {
                 "sony",
                 "playstation",
                 "nintendo",
-                "switch"
-        );
+                "switch",
+                "epicgames",
+                "epic games",
+                "epicstore",
+                "epic store",
+                "tito gabe",
+                "lord gaben",
+                "puto gordo",
+                "nft",
+                "star citizen",
+                "take my money"
+                );
         
 
 
         System.out.println("Revisadas " + TOTAL_PAGES + " paginas por hilo" );
         countKeyWords(
-                3141,
+                3152,
                 "https://vandal.elespanol.com/foro/mensaje/890262/tema-oficial-taberna-gordopecera-hoy-en-espejo-publico-steam-se-va-a-la-mierda/",
                 keyWords, "PC");
 
         countKeyWords(
-                3052,
+                3090,
                 "https://vandal.elespanol.com/foro/mensaje/974278/hilo-oficioso-xbox-next-gen-rumores-y-noticias-anaconda-roma-anthem-/",
                 keyWords, "Xbox");
 
         countKeyWords(
-                8847,
+                8985,
                 "https://vandal.elespanol.com/foro/mensaje/970857/-playstation-5-rumores-y-filtraciones-/",
                 keyWords, "Playstation");
 
         countKeyWords(
-                10655,
+                10743,
                 "https://vandal.elespanol.com/foro/mensaje/917132/the-evolved-tabernaka-de-nx-age-of-kimishima-edition/",
                 keyWords, "Switch");
     }
@@ -74,10 +85,9 @@ public class WordCount {
         System.out.println("Hilo " + threadName + " desde la pagina " + until + " hasta " + latestPage);
         Map<String, Double> wordsCount = new HashMap<>();
         for (int pageNumber = latestPage; pageNumber > until; pageNumber--) {
-            String text = getWebText(url + pageNumber);
-            List<String> textWords = Arrays.stream(text.split(" ")).toList();
+            String webContent = getWebContent(url + pageNumber);
             for (String word : keyWords) {
-                double count = Collections.frequency(textWords, word);
+                int count = StringUtils.countMatches(webContent, word);
                 double currentCount = wordsCount.get(word) == null ? 0 : wordsCount.get(word);
                 wordsCount.put(word, currentCount + count);
             }
@@ -97,7 +107,7 @@ public class WordCount {
         }
     }
 
-    private static String getWebText(String url) {
+    private static String getWebContent(String url) {
         try {
             String forumText = Jsoup.connect(url)
                     .get()
